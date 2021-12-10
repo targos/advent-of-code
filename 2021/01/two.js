@@ -2,9 +2,7 @@
 
 import { readInput } from '../utils.js';
 
-const input = readInput(import.meta.url);
-
-const numbers = input.map((value) => Number(value));
+const numbers = readInput(import.meta.url, Number);
 
 let total = 0;
 let previous = numbers[0] + numbers[1] + numbers[2];
