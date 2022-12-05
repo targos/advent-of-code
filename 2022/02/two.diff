@@ -1,0 +1,60 @@
+diff --git a/one.js b/two.js
+index 78ecdd2..961be6d 100644
+--- a/one.js
++++ b/two.js
+@@ -14,9 +14,9 @@ const playMapping = {
+   A: rock,
+   B: paper,
+   C: scissors,
+-  X: rock,
+-  Y: paper,
+-  Z: scissors,
++  X: lose,
++  Y: draw,
++  Z: win,
+ };
+ 
+ // Outcomes by opponent move -> player move
+@@ -38,6 +38,17 @@ const outcomes = {
+   },
+ };
+ 
++const moves = Object.fromEntries(
++  Object.entries(outcomes).map(([opponentMove, playerMoves]) => {
++    return [
++      opponentMove,
++      Object.fromEntries(
++        Object.entries(playerMoves).map((playerMove) => playerMove.reverse()),
++      ),
++    ];
++  }),
++);
++
+ const shapeScores = {
+   rock: 1,
+   paper: 2,
+@@ -52,6 +63,7 @@ const outcomeScores = {
+ 
+ let total = 0;
+ for await (const round of readInput(import.meta.url, splitInput)) {
++  round.player = getMove(round);
+   total += getRoundScore(round);
+ }
+ console.log(total);
+@@ -59,7 +71,7 @@ console.log(total);
+ function splitInput(input) {
+   const values = input.split(' ');
+   return {
+-    player: playMapping[values[1]],
++    expectedOutcome: playMapping[values[1]],
+     opponent: playMapping[values[0]],
+   };
+ }
+@@ -73,3 +85,7 @@ function getRoundScore(round) {
+   const outcomeScore = outcomeScores[getOutcome(round)];
+   return shapeScore + outcomeScore;
+ }
++
++function getMove(round) {
++  return moves[round.opponent][round.expectedOutcome];
++}

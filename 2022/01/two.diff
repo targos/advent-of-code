@@ -1,0 +1,28 @@
+diff --git a/one.js b/two.js
+index 2efc6f3..98a90be 100644
+--- a/one.js
++++ b/two.js
+@@ -2,18 +2,16 @@
+ 
+ import { readInput } from '../utils.js';
+ 
+-let biggestTotal = 0;
+-let currentTotal = 0;
++const calories = [];
+ 
+ for await (const value of readInput(import.meta.url)) {
+   if (value === '') {
+-    biggestTotal = Math.max(biggestTotal, currentTotal);
+-    currentTotal = 0;
++    calories.push(0);
+   } else {
+-    currentTotal += Number(value);
++    calories[calories.length - 1] += Number(value);
+   }
+ }
+ 
+-biggestTotal = Math.max(biggestTotal, currentTotal);
++calories.sort((a, b) => b - a);
+ 
+-console.log(biggestTotal);
++console.log(calories.slice(0, 3).reduce((c, v) => c + v, 0));
