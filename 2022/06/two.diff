@@ -1,0 +1,15 @@
+diff --git a/one.js b/two.js
+index e8959fd..e7a3b18 100644
+--- a/one.js
++++ b/two.js
+@@ -8,8 +8,8 @@ for await (const line of readInput(import.meta.url)) {
+ 
+ function processStream(line) {
+   for (let index = 0; index < line.length; index++) {
+-    if (new Set(line.slice(index, index + 4)).size === 4) {
+-      return index + 4;
++    if (new Set(line.slice(index, index + 14)).size === 14) {
++      return index + 14;
+     }
+   }
+ }
