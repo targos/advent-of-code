@@ -1,0 +1,30 @@
+diff --git a/one.js b/two.js
+index 618f7d9..f3d21d4 100644
+--- a/one.js
++++ b/two.js
+@@ -41,15 +41,19 @@ const dirSizes = new Map();
+ 
+ walk(root, '/');
+ 
+-let totalSize = 0;
+-for (const size of dirSizes.values()) {
+-  if (size <= 100000) {
+-    totalSize += size;
++const totalUsedSize = dirSizes.get('/');
++const unusedSpace = 70000000 - totalUsedSize;
++const sizeToReclaim = 30000000 - unusedSpace;
++
++const sortedDirs = Array.from(dirSizes).sort((dir1, dir2) => dir1[1] - dir2[1]);
++
++for (const [name, size] of sortedDirs) {
++  if (size >= sizeToReclaim) {
++    console.log(name, size);
++    break;
+   }
+ }
+ 
+-console.log(totalSize);
+-
+ function walk(dir, path) {
+   let childrenSizes = 0;
+   for (const [name, subDir] of dir.children) {
