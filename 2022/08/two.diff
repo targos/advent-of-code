@@ -1,0 +1,117 @@
+diff --git a/one.js b/two.js
+index 2d92560..c1e1303 100644
+--- a/one.js
++++ b/two.js
+@@ -8,45 +8,85 @@ for await (const line of readInput(import.meta.url)) {
+   matrix.push(line.split('').map(Number));
+ }
+ 
+-const visibleTrees = new Set();
+-
+ const rows = matrix.length;
+ const cols = matrix[0].length;
+ 
+-let currentHeight = -1;
+-
++let bestScore = 0;
+ for (let row = 0; row < rows; row++) {
+-  resetHeight();
+   for (let col = 0; col < cols; col++) {
+-    processTree(row, col);
+-  }
+-  resetHeight();
+-  for (let col = cols - 1; col >= 0; col--) {
+-    processTree(row, col);
++    const score = getScore(row, col);
++    bestScore = Math.max(bestScore, score);
+   }
+ }
+ 
+-for (let col = 0; col < cols; col++) {
+-  resetHeight();
+-  for (let row = 0; row < rows; row++) {
+-    processTree(row, col);
++console.log(bestScore);
++
++function getScore(treeRow, treeCol) {
++  if (
++    treeRow === 0 ||
++    treeCol === 0 ||
++    treeRow === rows - 1 ||
++    treeCol === cols - 1
++  ) {
++    return 0;
+   }
+-  resetHeight();
+-  for (let row = rows - 1; row >= 0; row--) {
+-    processTree(row, col);
++
++  const treeHeight = matrix[treeRow][treeCol];
++
++  let score = 1;
++
++  let seen = 0;
++
++  // top direction
++  reset();
++  for (let col = treeCol - 1; col >= 0; col--) {
++    if (processTree(treeRow, col)) {
++      break;
++    }
+   }
+-}
+ 
+-console.log(visibleTrees.size);
++  // bottom direction
++  reset();
++  for (let col = treeCol + 1; col < cols; col++) {
++    if (processTree(treeRow, col)) {
++      break;
++    }
++  }
+ 
+-function resetHeight() {
+-  currentHeight = -1;
+-}
++  // right direction
++  reset();
++  for (let row = treeRow + 1; row < rows; row++) {
++    if (processTree(row, treeCol)) {
++      break;
++    }
++  }
++
++  // left direction
++  reset();
++  for (let row = treeRow - 1; row >= 0; row--) {
++    if (processTree(row, treeCol)) {
++      break;
++    }
++  }
++
++  return score;
++
++  function reset() {
++    seen = 0;
++  }
+ 
+-function processTree(row, col) {
+-  const height = matrix[row][col];
+-  if (height > currentHeight) {
+-    visibleTrees.add(`${row}_${col}`);
+-    currentHeight = height;
++  function processTree(row, col) {
++    seen++;
++    if (
++      matrix[row][col] >= treeHeight ||
++      row === 0 ||
++      col === 0 ||
++      row === rows - 1 ||
++      col === cols - 1
++    ) {
++      score *= seen;
++      return true;
++    }
++    return false;
+   }
+ }
