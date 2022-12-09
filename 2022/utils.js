@@ -9,5 +9,9 @@ export async function* readInput(url, transform = String) {
 }
 
 function getInputFile() {
-  return process.argv.includes('train') ? 'train.txt' : 'input.txt';
+  return process.argv.includes('train2')
+    ? 'train2.txt'
+    : process.argv.includes('train')
+    ? 'train.txt'
+    : 'input.txt';
 }

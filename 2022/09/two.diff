@@ -1,0 +1,66 @@
+diff --git a/one.js b/two.js
+index af89e85..485ca23 100644
+--- a/one.js
++++ b/two.js
+@@ -3,10 +3,12 @@
+ import { readInput } from '../utils.js';
+ 
+ class Bridge {
+-  head = [0, 0];
+-  tail = [0, 0];
+   tailVisited = new Set(['0_0']);
+ 
++  constructor(numKnots) {
++    this.knots = Array.from({ length: numKnots }, () => [0, 0]);
++  }
++
+   move(inst) {
+     for (let i = 0; i < inst.steps; i++) {
+       this.#moveOnce(inst.direction);
+@@ -14,9 +16,12 @@ class Bridge {
+   }
+ 
+   #moveOnce(direction) {
+-    this.#moveKnot(this.head, direction);
+-    this.#checkTail(direction);
+-    this.tailVisited.add(`${this.tail[0]}_${this.tail[1]}`);
++    this.#moveKnot(this.knots[0], direction);
++    for (let i = 1; i < this.knots.length; i++) {
++      this.#checkNextKnot(this.knots[i - 1], this.knots[i]);
++    }
++    const tail = this.knots.at(-1);
++    this.tailVisited.add(`${tail[0]}_${tail[1]}`);
+   }
+ 
+   #moveKnot(knot, direction) {
+@@ -36,22 +41,22 @@ class Bridge {
+     }
+   }
+ 
+-  #checkTail() {
+-    if (distance(this.head, this.tail) <= Math.SQRT2) {
+-      // Close enough. Tail doesn't move.
++  #checkNextKnot(previous, next) {
++    if (distance(previous, next) <= Math.SQRT2) {
++      // Close enough. Knot doesn't move.
+       return;
+     }
+ 
+-    if (this.head[0] !== this.tail[0]) {
+-      this.#moveKnot(this.tail, this.head[0] > this.tail[0] ? 'R' : 'L');
++    if (previous[0] !== next[0]) {
++      this.#moveKnot(next, previous[0] > next[0] ? 'R' : 'L');
+     }
+-    if (this.head[1] !== this.tail[1]) {
+-      this.#moveKnot(this.tail, this.head[1] > this.tail[1] ? 'U' : 'D');
++    if (previous[1] !== next[1]) {
++      this.#moveKnot(next, previous[1] > next[1] ? 'U' : 'D');
+     }
+   }
+ }
+ 
+-const bridge = new Bridge();
++const bridge = new Bridge(10);
+ 
+ for await (const inst of readInput(import.meta.url, splitInput)) {
+   bridge.move(inst);
