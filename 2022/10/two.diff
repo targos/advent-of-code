@@ -1,0 +1,64 @@
+diff --git a/one.js b/two.js
+index 2bbeb77..19fbd3e 100644
+--- a/one.js
++++ b/two.js
+@@ -31,12 +31,46 @@ class CPU {
+   }
+ }
+ 
+-let sum = 0;
++class Screen {
++  constructor(cols, rows) {
++    this.cols = cols;
++    this.rows = rows;
++    this.currentRow = 0;
++    this.currentCol = 0;
++    this.lines = Array.from({ length: this.rows }, () =>
++      Array(this.cols).fill('.'),
++    );
++  }
++
++  drawPixel(spritePosition) {
++    if (
++      this.currentCol >= spritePosition - 1 &&
++      this.currentCol <= spritePosition + 1
++    ) {
++      this.lines[this.currentRow][this.currentCol] = '#';
++    } else {
++      this.lines[this.currentRow][this.currentCol] = '.';
++    }
++    this.currentCol++;
++    if (this.currentCol === this.cols) {
++      this.currentCol = 0;
++      this.currentRow++;
++      if (this.currentRow === this.rows) {
++        this.currentRow = 0;
++      }
++    }
++  }
++
++  toString() {
++    return this.lines.map((line) => line.join('')).join('\n');
++  }
++}
++
++const screen = new Screen(40, 6);
++
+ const cpu = new CPU({
+   onCycle(cpu) {
+-    if (cpu.cycles === 20 || (cpu.cycles - 20) % 40 === 0) {
+-      sum += cpu.cycles * cpu.X;
+-    }
++    screen.drawPixel(cpu.X);
+   },
+ });
+ 
+@@ -44,7 +78,7 @@ for await (const instruction of readInput(import.meta.url, splitInput)) {
+   cpu.executeInstruction(instruction);
+ }
+ 
+-console.log(sum);
++console.log(screen.toString());
+ 
+ function splitInput(input) {
+   if (input === 'noop') {
