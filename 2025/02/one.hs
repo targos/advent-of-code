@@ -1,7 +1,30 @@
-import Data.List (elemIndex)
+import Data.List
+import Data.Maybe
 
 main = do
   input <- getContents
   print (solveExercise input)
 
-solveExercise = id
+solveExercise = sum . concatMap (filter isInvalid . expandRange . splitRange) . getRanges
+
+getRanges :: String -> [String]
+getRanges = filter (/= ",") . groupBy (\a b -> a /= ',' && b /= ',')
+
+splitRange :: String -> (Int, Int)
+splitRange range = (read before, read (tail after))
+  where
+    (Just index) = elemIndex '-' range
+    (before, after) = splitAt index range
+
+expandRange :: (Int, Int) -> [Int]
+expandRange (a, b) = [a .. b]
+
+isInvalid :: Int -> Bool
+isInvalid value = isRepeat (show value)
+
+isRepeat :: String -> Bool
+isRepeat value
+  | odd (length value) = False
+  | otherwise = start == end
+  where
+    (start, end) = splitAt (length value `div` 2) value
